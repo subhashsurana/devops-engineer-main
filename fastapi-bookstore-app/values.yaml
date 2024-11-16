@@ -1,0 +1,148 @@
+# Default values for fastapi-bookstore-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# replicaCount: 1
+
+# image:
+#   repository: nginx
+#   pullPolicy: IfNotPresent
+#   # Overrides the image tag whose default is the chart appVersion.
+#   tag: ""
+
+# imagePullSecrets: []
+# nameOverride: ""
+# fullnameOverride: ""
+
+# serviceAccount:
+#   # Specifies whether a service account should be created
+#   create: true
+#   # Annotations to add to the service account
+#   annotations: {}
+#   # The name of the service account to use.
+#   # If not set and create is true, a name is generated using the fullname template
+#   name: ""
+
+# podAnnotations: {}
+
+# podSecurityContext: {}
+#   # fsGroup: 2000
+
+# securityContext: {}
+#   # capabilities:
+#   #   drop:
+#   #   - ALL
+#   # readOnlyRootFilesystem: true
+#   # runAsNonRoot: true
+#   # runAsUser: 1000
+
+# service:
+#   type: ClusterIP
+#   port: 80
+
+# ingress:
+#   enabled: false
+#   className: ""
+#   annotations: {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   hosts:
+#     - host: chart-example.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
+#   tls: []
+#   #  - secretName: chart-example-tls
+#   #    hosts:
+#   #      - chart-example.local
+
+# resources: {}
+#   # We usually recommend not to specify default resources and to leave this as a conscious
+#   # choice for the user. This also increases chances charts run on environments with little
+#   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+#   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#   # limits:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+#   # requests:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+
+# autoscaling:
+#   enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
+
+# nodeSelector: {}
+
+# tolerations: []
+
+# affinity: {}
+
+# Default values for FastAPI
+fastapi:
+  image:
+    repository: fastapi-bookstore-app
+    tag: v1
+  replicaCount: 3
+  service:
+    type: NodePort
+    name: fastapi-service
+  deployment:
+    name: fastapi
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+
+# PostgreSQL Configuration
+postgres:
+  image:
+    repository: postgres
+    tag: "13"
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  statefulsetName: "postgres"
+  serviceName: "postgres"
+  username: bookstore_user
+  password: bookstore$1234
+  database: bookstore_db
+  port: 5432
+  schema: "public"
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storage: "1Gi"
+# initdb.sql content or file path for initialization
+initdb:
+  enabled: true
+  file: "./initdb/initdb.sql"
+
+ingress:
+  enabled: true
+  hostname: "fastapi.local" # Default hostname for local testing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+  paths:
+  - path: /
+    pathType: Prefix
+  - path: /book
+    pathType: Prefix
+  - path: /db_info
+    pathType: Prefix
+
+service:
+  type: NodePort # Use "LoadBalancer" for public cloud, "NodePort" for local testing
+  nodePort: 30080 # Port to expose locally for NodePort
+  port: 80 # Target port for the FastAPI app
+  targetPort: 8000 # FastAPI container port

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.fastapi.deployment.name }}-app
+  labels:
+    app: {{ .Values.fastapi.deployment.name }}
+spec:
+  replicas: {{ .Values.fastapi.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.fastapi.deployment.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.fastapi.deployment.name }}
+    spec:
+      containers:
+        - name: {{ .Values.fastapi.deployment.name }}-app
+          image: {{ .Values.fastapi.image }}
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap
+            - secretRef:
+                name: postgres-secret

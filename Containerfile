@@ -37,6 +37,14 @@ COPY --from=builder app app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
+# Default PostgreSQL environment variables
+ENV POSTGRES_DB=book
+ENV POSTGRES_USER=book_user
+ENV POSTGRES_PASSWORD=bookp_pass
+ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_SCHEMA=bookstore
+
 # Change ownership to the non-root user and restrict permissions
 RUN chown -R fastapi:fastapi app && chmod -R 755 app
 
