@@ -1,0 +1,232 @@
+---
+# Source: fastapi-bookstore-app/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fastapi-sa
+  labels:
+    helm.sh/chart: fastapi-bookstore-app-0.1.0
+    app.kubernetes.io/name: fastapi-bookstore-app
+    app.kubernetes.io/instance: fastapi-app
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: fastapi-bookstore-app/templates/postgres-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+data:
+  POSTGRES_PASSWORD: "Ym9va3N0b3JlJDEyMzQ="
+---
+# Source: fastapi-bookstore-app/templates/initdb-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: initdb-configmap
+data:
+  initdb.sql: |
+---
+# Source: fastapi-bookstore-app/templates/postgres-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configmap
+data:
+  POSTGRES_DB: "bookstore_db"
+  POSTGRES_USER: "bookstore_user"
+  POSTGRES_PORT: "5432"
+  POSTGRES_SCHEMA: "public"
+  POSTGRES_HOST: "postgres.postgres"
+---
+# Source: fastapi-bookstore-app/templates/fastapi-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-svc
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8000
+      nodePort: 30080
+  selector:
+    app: fastapi
+---
+# Source: fastapi-bookstore-app/templates/postgres-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  clusterIP: None
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+# Source: fastapi-bookstore-app/templates/fastapi-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-app
+  labels:
+    app: fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      # serviceAccountName: fastapi-app-fastapi-bookstore-app
+      securityContext:
+        null    
+      containers:
+        - name: fastapi-app
+          image: fastapi-bookstore-app:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap
+            - secretRef:
+                name: postgres-secret
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+            requests:
+              cpu: 500m
+              memory: 256Mi
+---
+# Source: fastapi-bookstore-app/templates/postgres-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: postgres-configmap
+            - secretRef:
+                name: postgres-secret
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+            - name: initdb-scripts
+              mountPath: /docker-entrypoint-initdb.d/initdb.sql
+              subPath: initdb.sql
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+        - name: initdb-scripts
+          configMap:
+            name: initdb-configmap
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+---
+# Source: fastapi-bookstore-app/templates/fastapi-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fastapi-ingress
+  labels:
+    helm.sh/chart: fastapi-bookstore-app-0.1.0
+    app.kubernetes.io/name: fastapi-bookstore-app
+    app.kubernetes.io/instance: fastapi-app
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: "fastapi.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fastapi-service
+                port:
+                  number: 80
+          - path: /book
+            pathType: Prefix
+            backend:
+              service:
+                name: fastapi-service
+                port:
+                  number: 80
+          - path: /db_info
+            pathType: Prefix
+            backend:
+              service:
+                name: fastapi-service
+                port:
+                  number: 80
+---
+# Source: fastapi-bookstore-app/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "fastapi-app-fastapi-bookstore-app-test-connection"
+  labels:
+    helm.sh/chart: fastapi-bookstore-app-0.1.0
+    app.kubernetes.io/name: fastapi-bookstore-app
+    app.kubernetes.io/instance: fastapi-app
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['fastapi-app-fastapi-bookstore-app:80']
+      resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+  restartPolicy: Never

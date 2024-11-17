@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.postgres.statefulsetName }}
 spec:
   serviceName: {{ .Values.postgres.serviceName }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.postgres.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Values.postgres.statefulsetName }}
@@ -29,6 +29,8 @@ spec:
             - name: initdb-scripts
               mountPath: /docker-entrypoint-initdb.d/initdb.sql
               subPath: initdb.sql
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
@@ -38,9 +40,9 @@ spec:
             name: initdb-configmap
   volumeClaimTemplates:
     - metadata:
-        name: {{ .Values.postgres.statefulsetName }}-pvc
+        name: {{ .Values.postgres.statefulsetName }}-storage
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: {{ .Values.storage.size }}
+            storage: {{ .Values.postgres.persistence.storage.size }}

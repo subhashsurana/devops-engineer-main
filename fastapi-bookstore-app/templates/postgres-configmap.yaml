@@ -4,7 +4,7 @@ metadata:
   name: postgres-configmap
 data:
   POSTGRES_DB: {{ .Values.postgres.database | quote }}
-  POSTGRES_USER: {{ .Values.postgres.user | quote }}
+  POSTGRES_USER: {{ .Values.postgres.username | quote }}
   POSTGRES_PORT: "{{ .Values.postgres.port }}"
   POSTGRES_SCHEMA: {{ .Values.postgres.schema | quote }}
   POSTGRES_HOST: {{ printf "%s.%s" .Values.postgres.statefulsetName .Values.postgres.serviceName | quote }}

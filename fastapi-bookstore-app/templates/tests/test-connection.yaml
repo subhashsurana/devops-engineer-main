@@ -12,4 +12,7 @@ spec:
       image: busybox
       command: ['wget']
       args: ['{{ include "fastapi-bookstore-app.fullname" . }}:{{ .Values.service.port }}']
+      resources:
+          {{- toYaml .Values.resources | nindent 12 }}
   restartPolicy: Never
+

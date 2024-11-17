@@ -15,6 +15,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc \
     && pip install --no-cache-dir --upgrade -r requirements.txt \
     && apt-get purge -y --auto-remove gcc \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy application code
