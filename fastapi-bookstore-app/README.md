@@ -23,10 +23,11 @@ This Helm chart deploys a FastAPI application along with a PostgreSQL database o
 
 ## **Installation**
 
-1. **Clone the Repository**:
+1. **Clone the Repository & build the Container Image using below Podman/Docker command**:
    ```bash
    git clone <repository-url>
    cd <repository-directory>
+   podman build . -f Containerfile -t fastapi-bookstore-app:v1
 
 2. **Package the Chart: If not already packaged, you can package the chart**:
     ```
