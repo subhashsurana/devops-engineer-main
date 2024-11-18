@@ -14,7 +14,7 @@ spec:
       labels:
         app: {{ .Values.fastapi.deployment.name }}
     spec:
-      # serviceAccountName: {{ include "fastapi-bookstore-app.serviceAccountName" . }}
+      serviceAccountName: {{ .Values.fastapi.deployment.name }}-sa
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}    
       containers:

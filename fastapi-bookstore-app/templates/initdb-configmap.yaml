@@ -4,4 +4,4 @@ metadata:
   name: initdb-configmap
 data:
   initdb.sql: |
-{{ .Files.Get .Values.initdb.file | indent 4 }}
+{{ .Files.Get "files/initdb.sql" | indent 4 }}
