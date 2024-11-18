@@ -9,7 +9,7 @@ This Helm chart deploys a FastAPI application along with a PostgreSQL database o
 - Configurable environment variables for database connections via ConfigMaps and Secrets.
 - Persistent storage for PostgreSQL using PVCs.
 - Horizontal Pod Autoscaling for the FastAPI application.
-- Ingress support for external access with optional TLS.
+- Ingress support for external access.
 - Resource limits and requests for better cluster utilization.
 
 ---
@@ -43,45 +43,45 @@ The chart comes with a default values.yaml file. Below is an explanation of key 
 
 ### General Parameters
 
-| Key              | Description                                    | Default               |   |   |   |   |   |   |   |
-|------------------|------------------------------------------------|-----------------------|---|---|---|---|---|---|---|
-| image.repository | FastAPI container image repository             | fastapi-bookstore-app |   |   |   |   |   |   |   |
-| image.tag        | Tag of the FastAPI image                       | v1                    |   |   |   |   |   |   |   |
-| image.pullPolicy | Image pull policy                              | IfNotPresent          |   |   |   |   |   |   |   |
-| replicaCount     | Number of replicas for the FastAPI application | 3                     |   |   |   |   |   |   |   |
+| Key              | Description                                    | Default               |   
+|------------------|------------------------------------------------|-----------------------|
+| image.repository | FastAPI container image repository             | fastapi-bookstore-app |   
+| image.tag        | Tag of the FastAPI image                       | v1                    |   
+| image.pullPolicy | Image pull policy                              | IfNotPresent          |   
+| replicaCount     | Number of replicas for the FastAPI application | 3                     |   
 
 ### Database Parameters
 
-| Key                      | Description                        | Default        |   |   |   |   |   |   |   |
-|--------------------------|------------------------------------|----------------|---|---|---|---|---|---|---|
-| postgres.statefulsetName | Name of the PostgreSQL StatefulSet | postgres       |   |   |   |   |   |   |   |
-| postgres.dbName          | PostgreSQL database name           | bookstore_db   |   |   |   |   |   |   |   |
-| postgres.username        | PostgreSQL username                | bookstore_user |   |   |   |   |   |   |   |
-| postgres.password        | PostgreSQL password                | your_password  |   |   |   |   |   |   |   |
-| postgres.serviceName     | PostgreSQL service name            | postgres       |   |   |   |   |   |   
+| Key                      | Description                        | Default        |
+|--------------------------|------------------------------------|----------------|
+| postgres.statefulsetName | Name of the PostgreSQL StatefulSet | postgres       |
+| postgres.dbName          | PostgreSQL database name           | bookstore_db   |
+| postgres.username        | PostgreSQL username                | bookstore_user |
+| postgres.password        | PostgreSQL password                | your_password  |
+| postgres.serviceName     | PostgreSQL service name            | postgres       |
 
 ### Autoscaling
 
-| Key                                           | Description                          | Default |   |   |   |   |   |   |   |
-|-----------------------------------------------|--------------------------------------|---------|---|---|---|---|---|---|---|
-| autoscaling.enabled                           | Enable Horizontal Pod Autoscaler     | true   |   |   |   |   |   |   |   |
-| autoscaling.minReplicas                       | Minimum replicas                     | 1       |   |   |   |   |   |   |   |
-| autoscaling.maxReplicas                       | Maximum replicas                     | 10       |   |   |   |   |   |   |   |
-| autoscaling.targetCPUUtilizationPercentage    | Target CPU utilization percentage    | 80      |   |   |   |   |   |   |   |
-| autoscaling.targetMemoryUtilizationPercentage | Target memory utilization percentage | 80      |   |   
+| Key                                           | Description                          | Default |
+|-----------------------------------------------|--------------------------------------|---------|
+| autoscaling.enabled                           | Enable Horizontal Pod Autoscaler     | true    |
+| autoscaling.minReplicas                       | Minimum replicas                     | 1       |
+| autoscaling.maxReplicas                       | Maximum replicas                     | 10      |
+| autoscaling.targetCPUUtilizationPercentage    | Target CPU utilization percentage    | 80      |
+| autoscaling.targetMemoryUtilizationPercentage | Target memory utilization percentage | 80      |
 
 
 ### Ingress
-| Key              | Description                  | Default       |   |   |   |   |   |   |   |
-|------------------|------------------------------|---------------|---|---|---|---|---|---|---|
-| ingress.enabled  | Enable ingress               | true          |   |   |   |   |   |   |   |
-| ingress.hostname | Hostname for the application | fastapi.local |   |   |   |   |   |   |   |
-| ingress.tls      | Configure TLS for ingress    | []            |   |   |   |   |   |   |   |
+| Key              | Description                  | Default       |
+|------------------|------------------------------|---------------|
+| ingress.enabled  | Enable ingress               | true          |
+| ingress.hostname | Hostname for the application | fastapi.local |
+| ingress.tls      | Configure TLS for ingress    | []            |
 
 ### Storage
-| Key                   | Description                                  | Default |   |   |   |   |   |   |   |
-|-----------------------|----------------------------------------------|---------|---|---|---|---|---|---|---|
-| postgres.storage.size | Size of the persistent volume for PostgreSQL | 1Gi     |   |   |   |   |   |   |   |
+| Key                   | Description                                  | Default |
+|-----------------------|----------------------------------------------|---------|
+| postgres.storage.size | Size of the persistent volume for PostgreSQL | 1Gi     |
 
 # Customization Examples
 ## **Install with Custom Database Credentials**
