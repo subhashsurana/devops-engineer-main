@@ -20,7 +20,7 @@ spec:
       containers:
         - name: {{ .Values.fastapi.deployment.name }}-app
           image: {{ .Values.fastapi.image.repository }}:{{ .Values.fastapi.image.tag | default .Chart.AppVersion }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           envFrom:

@@ -64,9 +64,9 @@ autoscaling:
 # Default values for FastAPI
 fastapi:
   image:
-    repository: fastapi-bookstore-app
-    tag: v1
-  replicaCount: 3
+    repository: subhash23/fastapi-bookstore-app
+    tag: v2
+  replicaCount: 1
   service:
     type: NodePort
     name: fastapi-svc
@@ -94,11 +94,11 @@ postgres:
       memory: "512Mi"
   statefulsetName: "postgres"
   serviceName: "postgres"
-  username: bookstore_user
-  password: bookstore$1234
-  database: bookstore_db
+  username: "postgres"
+  password: "bookstore$1234"
+  database: "book"
   port: 5432
-  schema: "public"
+  schema: "bookstore"
   replicaCount: 1
   persistence:
     enabled: true

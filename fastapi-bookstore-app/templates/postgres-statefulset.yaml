@@ -18,6 +18,9 @@ spec:
           image: postgres:13
           ports:
             - containerPort: {{ .Values.postgres.port }}
+          env:
+          - name: PGDATA
+            value: /var/lib/postgresql/data/pgdata
           envFrom:
             - configMapRef:
                 name: postgres-configmap
