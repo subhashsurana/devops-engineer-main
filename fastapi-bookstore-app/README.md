@@ -120,5 +120,36 @@ http://<NodeIP>:<NodePort>
 curl http://<NodeIP>:<NodePort>/book/
 curl http://<NodeIP>:<NodePort>/db_info/
 ```
+## Endpoint
+- `/book/`
+![image](https://github.com/user-attachments/assets/a681b725-ed8b-4a96-a2db-c280e60baa05)
+- `/`
+
+![image](https://github.com/user-attachments/assets/4092f4fc-81e3-4433-a644-1261cacff873)
+
+- `/db_info/`
+
+![image](https://github.com/user-attachments/assets/0037ec0a-0579-4ae8-90cf-01297f5906f1)
+
+**Swagger api**
+- `/docs`
+
+![image](https://github.com/user-attachments/assets/8ed89303-9666-4644-93e4-4966638d59c3)
+
+- `db_info`
+
+![image](https://github.com/user-attachments/assets/4d84d94c-5cc4-4da4-8efb-cecbadeb3095)
+
+- `db_info_db_info__get`
+![image](https://github.com/user-attachments/assets/ed52f6f6-c5ec-4fa1-8132-74a76052d07f)
+
+- `book_book__get`
+![image](https://github.com/user-attachments/assets/a8ca3dc7-2901-495e-90b3-182da3c55b26)
+
+`All values fetched from Database when no filter applied`
+
+![image](https://github.com/user-attachments/assets/a1f18707-ce19-4c03-9b32-070c6c46365e)
+
+[response_1732081128480.json](https://github.com/user-attachments/files/17825528/response_1732081128480.json)
 
 
