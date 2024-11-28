@@ -1,25 +1,25 @@
 # Multi-stage Containerfile for FastAPI
 
 # Stage 1: Builder stage
-FROM python:3.11.1-slim as builder
+FROM python:3.11.1-slim AS builder
 
 # Set up a non-root user
-RUN groupadd -r fastapi && useradd --no-log-init -r -g fastapi fastapi
+#RUN groupadd -r fastapi && useradd --no-log-init -r -g fastapi fastapi
 
 # Set the working directory
-WORKDIR app
+#WORKDIR app
 
 # Install dependencies with a lower privilege level, and remove build dependencies
 COPY requirements.txt ./
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc \
-    && pip install --no-cache-dir --upgrade -r requirements.txt \
-    && apt-get purge -y --auto-remove gcc \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && pip install --no-cache-dir --upgrade -r requirements.txt 
+#    && apt-get purge -y --auto-remove gcc \
+#    && apt-get clean \
+#    && rm -rf /var/lib/apt/lists/*
 
 # Copy application code
-COPY app app
+#COPY app app
 
 # Stage 2: Final, minimal image
 FROM python:3.11.1-slim
@@ -34,7 +34,7 @@ ENV PYTHONPATH=app
 RUN groupadd -r fastapi && useradd --no-log-init -r -g fastapi fastapi
 
 # Copy only application related code from the builder stage to the final stage
-COPY --from=builder app app
+COPY app app
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
