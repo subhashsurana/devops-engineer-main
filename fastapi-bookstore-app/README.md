@@ -19,6 +19,12 @@ This Helm chart deploys a FastAPI application along with a PostgreSQL database o
 - Helm 3.x.
 - Metrics Server (required for HPA).
 
+**Helm Installation command**
+```bash
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+```
 ---
 
 ## **Installation**
@@ -28,13 +34,16 @@ This Helm chart deploys a FastAPI application along with a PostgreSQL database o
    git clone <repository-url>
    cd <repository-directory>
    podman build . -f Containerfile -t fastapi-bookstore-app:v1
+   ```
 
 2. **Package the Chart: If not already packaged, you can package the chart**:
     ```
     helm package .
+    ```
 3. **Install the Chart: Replace <release-name> and <namespace> with your preferred names.**
     ```bash
-    helm install <release-name> ./fastapi-bookstore-chart --namespace <namespace> --create-namespace
+    helm install <release-name> ./fastapi-bookstore-app --namespace <namespace> --create-namespace
+    ```
 4. Verify the installation
     ```bash
     kubectl get all -n <namespace>
@@ -88,7 +97,7 @@ The chart comes with a default values.yaml file. Below is an explanation of key 
 ## **Install with Custom Database Credentials**
     
    ```bash
-   helm install my-release ./fastapi-bookstore-chart \
+   helm install my-release ./fastapi-bookstore-app \
   --set postgres.username=myuser \
   --set postgres.password=mypassword \
   --set postgres.dbName=mydatabase
@@ -97,16 +106,20 @@ The chart comes with a default values.yaml file. Below is an explanation of key 
 ## **Enable Autoscaling**
 
    ```bash
-   helm install my-release ./fastapi-bookstore-chart \
+   helm install my-release ./fastapi-bookstore-app \
   --set autoscaling.enabled=true \
   --set autoscaling.minReplicas=2 \
   --set autoscaling.maxReplicas=10 \
   --set autoscaling.targetCPUUtilizationPercentage=50
-  ```    
+  ```
+## **Using Public Cloud LoadBalancer instead of NodePort**
+```bash
+helm install my-release ./fastapi-bookstore-app/ --set "service.type=LoadBalancer"
+```
 
 ## **Accessing the Application**
 
-### Without Ingress
+### With NodePort
 **Find the FastAPI service NodePort:**
 ```bash
 kubectl get svc -n <namespace>
@@ -120,6 +133,14 @@ http://<NodeIP>:<NodePort>
 curl http://<NodeIP>:<NodePort>/book/
 curl http://<NodeIP>:<NodePort>/db_info/
 ```
+
+### With LoadBalancer
+Run the below command to ensure the LoadBalancer is created and get its external IP or DNS
+```bash
+kubectl get svc service-name
+```
+- EXTERNAL-IP: This is the public endpoint of your FastAPI service.
+- Append with above sub-endpoints `/book` `/db_info` `/docs` (Swagger UI)
 
 ## **To Test while working on Kubernetes hosted on Public cloud running on EC2**
 - You can use SSH tunneling to forward traffic from a bastion host (AWS EC2) to access a NodePort service running on a Kubernetes node. This allows you to securely forward traffic from your local machine, through the bastion host, to the Kubernetes node and the NodePort service.
